@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Header } from "@/components/dashboard/Header";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { Plus, Search, Filter, LayoutGrid, List } from "lucide-react";
+import { SignUpModal, SignUpData } from "@/components/auth/SignUpModal";
 
 // Mock data - replace with actual API calls
 const mockProjects: Project[] = [
@@ -84,14 +85,33 @@ export function Dashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [user, setUser] = useState({ name: "John Doe", email: "john@example.com", role: "Admin" });
 
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+
+  const handleSignUp = async (data: SignUpData) => {
+  console.log("Sign up data:", data);
+  // Here you would make your API call to register the user
+  // Example API call:
+  // const response = await fetch('/api/auth/signup', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({
+  //     name: data.name,
+  //     email: data.email,
+  //     password: data.password,
+  //   }),
+  // });
+  
+  // After successful signup, close modal and potentially set user
+  setIsSignUpOpen(false);
+};
+
+const handleSignupClick = () => {
+  setIsSignUpOpen(true);
+};
+
   const handleLogin = () => {
     // Implement login logic
     console.log("Login clicked");
-  };
-
-  const handleSignup = () => {
-    // Implement signup logic
-    console.log("Signup clicked");
   };
 
   const handleLogout = () => {
@@ -127,7 +147,12 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header user={user} onLogin={handleLogin} onSignup={handleSignup} onLogout={handleLogout} />
+      <Header 
+        user={user} 
+        onLogin={handleLogin} 
+        onSignup={handleSignupClick}  // Pass this instead of handleSignup
+        onLogout={handleLogout} 
+        />
 
       <main className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -243,6 +268,16 @@ export function Dashboard() {
       {isCreateModalOpen && (
         <CreateProjectModal onClose={() => setIsCreateModalOpen(false)} onCreate={handleCreateProject} />
       )}
+
+      <SignUpModal
+        isOpen={isSignUpOpen}
+        onClose={() => setIsSignUpOpen(false)}
+        onSignUp={handleSignUp}
+        onSwitchToLogin={() => {
+          setIsSignUpOpen(false);
+          // Open login modal logic here
+        }}
+      />
     </div>
   );
 }
