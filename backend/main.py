@@ -1,8 +1,30 @@
 # backend/main.py
+from fastapi import Depends, FastAPI
 
-from fastapi import FastAPI
+from dotenv import load_dotenv
+load_dotenv()
+
+from app.services.db import get_db_connection
 
 app = FastAPI()
+
+# Load environment variables from .env
+
+def get_db():
+    conn = get_db_connection()
+    try:
+        yield conn
+        print("DB connection successful")
+    finally:
+        conn.close()
+
+@app.get("/time")
+def get_time(db=Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT NOW()")
+    time = cursor.fetchone()
+    cursor.close()
+    return {"time": time}
 
 
 @app.get("/")

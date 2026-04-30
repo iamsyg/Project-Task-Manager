@@ -1,0 +1,42 @@
+# 🔥 Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 🔥 Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# 🔥 Environment variables
+.env
+.env.*
+
+# 🔥 Logs
+*.log
+
+# 🔥 OS files
+.DS_Store
+Thumbs.db
+
+# 🔥 IDE / Editor
+.vscode/
+.idea/
+
+# 🔥 Build / distribution
+build/
+dist/
+*.egg-info/
+
+# 🔥 Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# 🔥 SQLite (if used)
+*.db
+
+# 🔥 Misc
+*.swp
+*.swo
