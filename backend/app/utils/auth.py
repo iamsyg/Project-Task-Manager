@@ -22,12 +22,9 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 
 def hash_password(password: str):
-    password = hashlib.sha256(password.encode()).hexdigest()
     return pwd_context.hash(password)
 
-
 def verify_password(password: str, hashed: str):
-    password = hashlib.sha256(password.encode()).hexdigest()
     return pwd_context.verify(password, hashed)
 
 

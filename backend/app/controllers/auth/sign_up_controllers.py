@@ -3,8 +3,10 @@
 from fastapi import HTTPException, status
 from app.utils.supabase import supabase
 from app.models.auth.sign_up_model import SignUpRequest
-from app.utils.auth import hash_password
+from app.utils.auth import hash_password, create_access_token
 
+
+from app.utils.auth import hash_password, create_access_token
 
 async def sign_up_controller(data: SignUpRequest):
     name = data.name.strip()
@@ -15,7 +17,6 @@ async def sign_up_controller(data: SignUpRequest):
         raise HTTPException(400, "All fields are required")
 
     try:
-        # 🔍 Check if user exists
         existing_user = (
             supabase.table("users")
             .select("id")
@@ -23,15 +24,11 @@ async def sign_up_controller(data: SignUpRequest):
             .execute()
         )
 
-        print("🔍 Existing user check:", existing_user)
-
         if existing_user.data:
             raise HTTPException(409, "User already exists")
 
-        # 🔐 Hash password
         hashed_password = hash_password(password)
 
-        # 💾 Insert user
         res = (
             supabase.table("users")
             .insert({
@@ -42,10 +39,13 @@ async def sign_up_controller(data: SignUpRequest):
             .execute()
         )
 
-        if res is None or res.data is None:
+        if not res or not res.data:
             raise HTTPException(500, "Failed to insert user")
 
         user = res.data[0]
+
+        # 🔐 CREATE TOKENS
+        access_token = create_access_token({"sub": user["email"]})
 
         return {
             "message": "User registered successfully",
@@ -54,6 +54,8 @@ async def sign_up_controller(data: SignUpRequest):
                 "email": user["email"],
                 "name": user["name"]
             },
+            "access_token": access_token,
+            "token_type": "bearer",
             "status": "success"
         }
 

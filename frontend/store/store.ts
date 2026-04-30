@@ -1,11 +1,11 @@
 // frontend/store/store.ts
 
 import { configureStore } from "@reduxjs/toolkit";
-import signInReducer from "./slices/auth/signInSlice";
+import authReducer from "./slices/auth/authSlice";
 
 export const store = configureStore({
   reducer: {
-    signIn: signInReducer,
+    auth: authReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 });

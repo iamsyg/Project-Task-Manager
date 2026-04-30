@@ -1,4 +1,4 @@
-// frontend/store/slices/auth/signInSlice.ts
+// frontend/store/slices/auth/signUpSlice.ts
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -20,7 +20,7 @@ const initialState: AuthState = {
 };
 
 const authSlice = createSlice({
-    name: "signIn",
+    name: "auth",
     initialState,
     reducers: {
         setUser(state, action: PayloadAction<{ name: string; email: string }>) {
