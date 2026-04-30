@@ -6,8 +6,11 @@ from dotenv import load_dotenv
 
 load_dotenv()  
 
-SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
-SUPABASE_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY")  # service role key
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # 🔥 use this
+print("SUPABASE KEY:", SUPABASE_KEY[:20])
+print("SUPABASE URL:", SUPABASE_URL)
+
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise RuntimeError("SUPABASE_URL or SUPABASE_KEY is missing")
