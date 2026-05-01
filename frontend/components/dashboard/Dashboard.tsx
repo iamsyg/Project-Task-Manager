@@ -6,6 +6,7 @@ import { Header } from "@/components/dashboard/Header";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { Plus, Search, Filter, LayoutGrid, List } from "lucide-react";
 import { SignUpModal, SignUpData } from "@/components/auth/SignUpModal";
+import { useCreateProject } from "@/hooks/project/useCreateProject";
 
 import { useAppSelector } from "@/store/hooks";
 
@@ -300,10 +301,20 @@ function CreateProjectModal({
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
 
+  const { createProject } = useCreateProject();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
     onCreate({ title, description, dueDate });
+
+    try {
+      const res = createProject(title, description, dueDate);
+      console.log("Project created:", res);
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
+
   };
 
   return (
