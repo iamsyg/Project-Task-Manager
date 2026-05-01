@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Menu, X, User, LogOut, Settings } from "lucide-react";
 
 interface HeaderProps {
-  user?: { name: string; email: string; role: string } | null;
+  user?: { name: string; email: string;} | null;
   onLogin?: () => void;
   onSignup?: () => void;
   onLogout?: () => void;
@@ -59,7 +59,6 @@ export function Header({ user, onLogin, onSignup, onLogout }: HeaderProps) {
                   </div>
                   <div className="text-left">
                     <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                    <p className="text-xs text-gray-500">{user.role}</p>
                   </div>
                 </button>
 

@@ -83,7 +83,7 @@ export function Dashboard() {
   const [filterStatus, setFilterStatus] = useState<"all" | "Pending" | "Progress" | "Completed">("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [user, setUser] = useState({ name: "John Doe", email: "john@example.com", role: "Admin" });
+  const [user, setUser] = useState({ name: "John Doe", email: "john@example.com"});
 
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 

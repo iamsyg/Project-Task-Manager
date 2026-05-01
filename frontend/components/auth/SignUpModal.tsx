@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { X, Eye, EyeOff, Mail, Lock, User, Check } from "lucide-react";
+import { useSignUp } from "@/hooks/auth/useSignUp";
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -15,7 +16,6 @@ export interface SignUpData {
   name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
 export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: SignUpModalProps) {
@@ -23,13 +23,13 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Partial<SignUpData>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [touched, setTouched] = useState<Partial<Record<keyof SignUpData, boolean>>>({});
+
+  const { signUp } = useSignUp();
 
   if (!isOpen) return null;
 
@@ -47,15 +47,6 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
         return "";
       case "password":
         if (!value) return "Password is required";
-        if (value.length < 6) return "Password must be at least 6 characters";
-        if (value.length > 50) return "Password must be less than 50 characters";
-        if (!/(?=.*[A-Z])/.test(value)) return "Password must contain at least one uppercase letter";
-        if (!/(?=.*[a-z])/.test(value)) return "Password must contain at least one lowercase letter";
-        if (!/(?=.*\d)/.test(value)) return "Password must contain at least one number";
-        return "";
-      case "confirmPassword":
-        if (!value) return "Please confirm your password";
-        if (value !== formData.password) return "Passwords do not match";
         return "";
       default:
         return "";
@@ -71,11 +62,11 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
       setErrors((prev) => ({ ...prev, [name]: error }));
     }
     
-    // Re-validate confirm password when password changes
-    if (name === "password" && touched.confirmPassword) {
-      const confirmError = validateField("confirmPassword", formData.confirmPassword);
-      setErrors((prev) => ({ ...prev, confirmPassword: confirmError }));
-    }
+    // // Re-validate confirm password when password changes
+    // if (name === "password" && touched.confirmPassword) {
+    //   const confirmError = validateField("confirmPassword", formData.confirmPassword);
+    //   setErrors((prev) => ({ ...prev, confirmPassword: confirmError }));
+    // }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -87,6 +78,12 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    try {
+        await signUp(formData.name, formData.email, formData.password);
+      } catch (error) {
+        console.error("Signup failed:", error);
+    }
     
     // Validate all fields
     const newErrors: Partial<SignUpData> = {};
@@ -98,6 +95,8 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
         newErrors[field] = error;
         isValid = false;
       }
+
+      
     });
     
     setErrors(newErrors);
@@ -105,7 +104,6 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
       name: true,
       email: true,
       password: true,
-      confirmPassword: true,
     });
     
     if (isValid) {
