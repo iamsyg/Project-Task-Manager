@@ -45,7 +45,7 @@ async def sign_up_controller(data: SignUpRequest):
         user = res.data[0]
 
         # 🔐 CREATE TOKENS
-        access_token = create_access_token({"sub": user["email"]})
+        access_token = create_access_token({"sub": user["id"]})
 
         return {
             "message": "User registered successfully",

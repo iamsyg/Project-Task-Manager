@@ -21,7 +21,7 @@ async def verify_jwt_token(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("user_id")
+        user_id = payload.get("sub")
 
         # ✅ Step 2: Verify profile exists (IMPORTANT)
         # profile_res = (
