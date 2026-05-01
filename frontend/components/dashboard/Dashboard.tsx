@@ -1,11 +1,13 @@
 // frontend/components/dashboard/Header.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/dashboard/Header";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { Plus, Search, Filter, LayoutGrid, List } from "lucide-react";
 import { SignUpModal, SignUpData } from "@/components/auth/SignUpModal";
+
+import { useAppSelector } from "@/store/hooks";
 
 // Mock data - replace with actual API calls
 const mockProjects: Project[] = [
@@ -83,27 +85,32 @@ export function Dashboard() {
   const [filterStatus, setFilterStatus] = useState<"all" | "Pending" | "Progress" | "Completed">("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [user, setUser] = useState({ name: "John Doe", email: "john@example.com"});
 
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
-  const handleSignUp = async (data: SignUpData) => {
-  console.log("Sign up data:", data);
-  // Here you would make your API call to register the user
-  // Example API call:
-  // const response = await fetch('/api/auth/signup', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     name: data.name,
-  //     email: data.email,
-  //     password: data.password,
-  //   }),
-  // });
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    console.log("User from Redux:", user);
+  }, []);
+
+//   const handleSignUp = async (data: SignUpData) => {
+//   console.log("Sign up data:", data);
+//   // Here you would make your API call to register the user
+//   // Example API call:
+//   // const response = await fetch('/api/auth/signup', {
+//   //   method: 'POST',
+//   //   headers: { 'Content-Type': 'application/json' },
+//   //   body: JSON.stringify({
+//   //     name: data.name,
+//   //     email: data.email,
+//   //     password: data.password,
+//   //   }),
+//   // });
   
-  // After successful signup, close modal and potentially set user
-  setIsSignUpOpen(false);
-};
+//   // After successful signup, close modal and potentially set user
+//   setIsSignUpOpen(false);
+// };
 
 const handleSignupClick = () => {
   setIsSignUpOpen(true);
@@ -114,10 +121,10 @@ const handleSignupClick = () => {
     console.log("Login clicked");
   };
 
-  const handleLogout = () => {
-    // Implement logout logic
-    setUser(null as any);
-  };
+//   const handleLogout = () => {
+//     // Implement logout logic
+//     setUser(null as any);
+//   };
 
   const handleCreateProject = (projectData: any) => {
     const newProject: Project = {
@@ -148,10 +155,10 @@ const handleSignupClick = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header 
-        user={user} 
+        // user={user} 
         onLogin={handleLogin} 
         onSignup={handleSignupClick}  // Pass this instead of handleSignup
-        onLogout={handleLogout} 
+        // onLogout={handleLogout} 
         />
 
       <main className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
@@ -272,7 +279,6 @@ const handleSignupClick = () => {
       <SignUpModal
         isOpen={isSignUpOpen}
         onClose={() => setIsSignUpOpen(false)}
-        onSignUp={handleSignUp}
         onSwitchToLogin={() => {
           setIsSignUpOpen(false);
           // Open login modal logic here

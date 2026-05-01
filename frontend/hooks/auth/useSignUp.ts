@@ -10,6 +10,8 @@ export const useSignUp = () => {
         dispatch(setLoading(true));
         dispatch(setError(null));
 
+        console.log("Signing up with:", { name, email });
+
         try {
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`, {
@@ -35,7 +37,14 @@ export const useSignUp = () => {
                 throw new Error(data.message || "Failed to sign up");
             }
 
-            dispatch(setUser({ name: data.name, email: data.email }));
+            localStorage.setItem(
+                "user",
+                JSON.stringify({ name: data.user.name, email: data.user.email })
+            );
+
+            console.log("Sign up successful, user data:", { name: data.user.name, email: data.user.email });
+
+            dispatch(setUser({ name: data.user.name, email: data.user.email }));
 
         }
         catch (err: any) {

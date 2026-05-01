@@ -18,7 +18,7 @@ export interface SignUpData {
   password: string;
 }
 
-export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: SignUpModalProps) {
+export function SignUpModal({ isOpen, onClose, onSwitchToLogin }: SignUpModalProps) {
   const [formData, setFormData] = useState<SignUpData>({
     name: "",
     email: "",
@@ -56,12 +56,12 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
     if (touched[name as keyof SignUpData]) {
       const error = validateField(name as keyof SignUpData, value);
       setErrors((prev) => ({ ...prev, [name]: error }));
     }
-    
+
     // // Re-validate confirm password when password changes
     // if (name === "password" && touched.confirmPassword) {
     //   const confirmError = validateField("confirmPassword", formData.confirmPassword);
@@ -79,55 +79,46 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-        await signUp(formData.name, formData.email, formData.password);
-      } catch (error) {
-        console.error("Signup failed:", error);
-    }
-    
-    // Validate all fields
     const newErrors: Partial<SignUpData> = {};
     let isValid = true;
-    
+
     (Object.keys(formData) as Array<keyof SignUpData>).forEach((field) => {
       const error = validateField(field, formData[field]);
       if (error) {
         newErrors[field] = error;
         isValid = false;
       }
-
-      
     });
-    
+
     setErrors(newErrors);
     setTouched({
       name: true,
       email: true,
       password: true,
     });
-    
-    if (isValid) {
+
+    if (!isValid) return;
+
+    try {
       setIsLoading(true);
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        onSignUp?.(formData);
-        onClose();
-      } catch (error) {
-        console.error("Signup failed:", error);
-      } finally {
-        setIsLoading(false);
-      }
+
+      await signUp(formData.name, formData.email, formData.password);
+
+      onClose(); // close AFTER success
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const getInputClassName = (field: keyof SignUpData) => {
     const hasError = errors[field] && touched[field];
-    return `w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-      hasError
-        ? "border-red-300 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500/20"
-    }`;
+    return `w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-all ${hasError
+      ? "border-red-300 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500/20"
+      }`;
   };
 
   return (
@@ -137,7 +128,7 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
         className="fixed inset-0 bg-black/50 z-50"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50">
         <div className="p-6">
@@ -231,20 +222,19 @@ export function SignUpModal({ isOpen, onClose, onSignUp, onSwitchToLogin }: Sign
               {errors.password && touched.password && (
                 <p className="mt-1 text-xs text-red-500">{errors.password}</p>
               )}
-              
+
               {/* Password strength indicator */}
               {formData.password && !errors.password && touched.password && (
                 <div className="mt-2">
                   <div className="flex items-center gap-2 text-xs">
                     <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full transition-all duration-300 ${
-                          formData.password.length >= 6 
-                            ? formData.password.length >= 8 
-                              ? "w-full bg-green-500" 
-                              : "w-2/3 bg-yellow-500"
-                            : "w-1/3 bg-red-500"
-                        }`}
+                      <div
+                        className={`h-full transition-all duration-300 ${formData.password.length >= 6
+                          ? formData.password.length >= 8
+                            ? "w-full bg-green-500"
+                            : "w-2/3 bg-yellow-500"
+                          : "w-1/3 bg-red-500"
+                          }`}
                       />
                     </div>
                     <span className="text-gray-500">

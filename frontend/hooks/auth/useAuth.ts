@@ -1,3 +1,5 @@
+"use client";
+
 // // frontend/hooks/auth/useAuth.ts
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
