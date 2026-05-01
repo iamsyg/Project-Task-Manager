@@ -6,7 +6,7 @@ load_dotenv()
 
 from app.services.db import get_db_connection
 from app.routes.auth.auth_route import router as auth_router
-from app.routes.project.create_project_route import router as create_project_router
+from app.routes.project.project_route import router as project_router
 
 app = FastAPI()
 
@@ -45,4 +45,4 @@ def read_root():
 
 
 app.include_router(auth_router)
-app.include_router(create_project_router)
+app.include_router(project_router)
