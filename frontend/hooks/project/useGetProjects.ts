@@ -21,9 +21,7 @@ export const useGetProjects = () => {
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/all`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: "include",
         }
       );
 

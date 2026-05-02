@@ -19,6 +19,7 @@ export const useSignUp = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({ name, email, password }),
             });
 
@@ -29,22 +30,16 @@ export const useSignUp = () => {
 
             const data = await response.json();
 
-            if (data.access_token) {
-                localStorage.setItem("accessToken", data.access_token);
-            }
 
             if (!response.ok) {
                 throw new Error(data.message || "Failed to sign up");
             }
 
-            localStorage.setItem(
-                "user",
-                JSON.stringify({ name: data.user.name, email: data.user.email })
-            );
+            localStorage.setItem("user", JSON.stringify(data.user));
 
             console.log("Sign up successful, user data:", { name: data.user.name, email: data.user.email });
 
-            dispatch(setUser({ name: data.user.name, email: data.user.email }));
+            dispatch(setUser({ id: data.user.id, name: data.user.name, email: data.user.email }));
 
         }
         catch (err: any) {

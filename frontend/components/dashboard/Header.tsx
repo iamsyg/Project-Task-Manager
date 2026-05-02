@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Menu, X, User, LogOut, Settings } from "lucide-react";
 
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { logout } from "@/store/slices/auth/authSlice";
+import useLogOut from "@/hooks/auth/useLogOut";
 
 interface HeaderProps {
     onLogin: () => void;
@@ -22,12 +22,18 @@ export function Header({ onLogin, onSignup }: HeaderProps) {
     const { user, isAuthenticated } = useAppSelector((state) => state.auth);
     const dispatch = useAppDispatch();
 
+    const { handleLogout } = useLogOut();
+
+
+
     console.log("Header - User from Redux:", user);
 
-    const handleLogoutClick = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("user");
-        dispatch(logout());
+    const handleLogoutClick = async () => {
+        try {
+            await handleLogout();
+        } catch (error) {
+            console.error("Failed to logout:", error);
+        }
     };
 
     useEffect(() => {

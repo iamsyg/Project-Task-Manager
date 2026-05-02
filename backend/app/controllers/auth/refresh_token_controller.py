@@ -14,7 +14,11 @@ async def refresh_token_controller(refresh_token: str):
     try:
         # 🔍 Decode refresh token
         payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload["user_id"]
+
+        user_id = payload.get("sub")
+
+        if not user_id:
+            raise HTTPException(401, "Invalid refresh token payload")
 
         # 🔍 Check if token matches DB
         res = (
@@ -32,11 +36,12 @@ async def refresh_token_controller(refresh_token: str):
 
         # 🎟️ Create new access token
         new_access_token = create_access_token({
-            "user_id": user_id
+            "sub": user_id
         })
 
         return {
-            "access_token": new_access_token
+            "access_token": new_access_token,
+            "token_type": "bearer"
         }
 
     except jwt.ExpiredSignatureError:

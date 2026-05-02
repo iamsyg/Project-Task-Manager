@@ -1,4 +1,4 @@
-// // frontend/components/dashboard/Header.tsx
+// frontend/components/dashboard/Dashboard.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { Header } from "@/components/dashboard/Header";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { Plus, Search, LayoutGrid, List, FolderKanban } from "lucide-react";
 import { SignUpModal } from "@/components/auth/SignUpModal";
+import { LogInModal } from "@/components/auth/LogInModal";
 import { useAppSelector } from "@/store/hooks";
 import { useGetProjects } from "@/hooks/project/useGetProjects";
 import { useCreateProject } from "@/hooks/project/useCreateProject";
@@ -18,6 +19,7 @@ export function Dashboard() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { projects, loading } = useAppSelector((state) => state.projectList);
@@ -55,7 +57,7 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
-        onLogin={() => console.log("Login clicked")}
+        onLogin={() => setIsLoginOpen(true)}
         onSignup={() => setIsSignUpOpen(true)}
       />
 
@@ -110,7 +112,7 @@ export function Dashboard() {
                               : "text-gray-600 hover:bg-gray-50"
                           }`}
                         >
-                          {status}
+                          {status.replace("_", " ")}
                         </button>
                       )
                     )}
@@ -192,7 +194,23 @@ export function Dashboard() {
       <SignUpModal
         isOpen={isSignUpOpen}
         onClose={() => setIsSignUpOpen(false)}
-        onSwitchToLogin={() => setIsSignUpOpen(false)}
+        onSwitchToLogin={() => {
+          setIsSignUpOpen(false);
+          setIsLoginOpen(true);
+        }}
+      />
+
+      <LogInModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSwitchToSignUp={() => {
+          setIsLoginOpen(false);
+          setIsSignUpOpen(true);
+        }}
+        onForgotPassword={() => {
+          // Optional: Add forgot password functionality
+          console.log("Forgot password clicked");
+        }}
       />
     </div>
   );
