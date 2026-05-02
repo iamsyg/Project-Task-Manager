@@ -29,24 +29,7 @@ async def refresh(request: Request):
 
     data = await refresh_token_controller(refresh_token)
 
-    response = JSONResponse(content={
-        "message": "Access token refreshed",
-        "status": "success"
-    })
-
-    print("Access token", data["access_token"])  # Debugging line
-
-    response.set_cookie(
-        key="access_token",
-        value=data["access_token"],
-        httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=60 * 60,
-        domain=None,  
-    )
-
-    return response
+    return data
 
 @router.post("/login")
 async def login(data: LoginRequest):

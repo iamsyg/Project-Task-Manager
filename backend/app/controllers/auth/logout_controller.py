@@ -4,6 +4,7 @@ import jwt
 from fastapi.responses import JSONResponse
 from app.utils.auth import REFRESH_SECRET_KEY, ALGORITHM
 from app.utils.supabase import supabase
+from app.utils.cookie import delete_auth_cookies
 
 async def logout_controller(refresh_token: str | None):
     if refresh_token:
@@ -24,7 +25,6 @@ async def logout_controller(refresh_token: str | None):
         "status": "success"
     })
 
-    response.delete_cookie("access_token", path="/")
-    response.delete_cookie("refresh_token", path="/")
+    delete_auth_cookies(response)
 
     return response

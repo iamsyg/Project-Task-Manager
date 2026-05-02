@@ -1,6 +1,7 @@
 # backend/app/controllers/auth/refresh_token_controller.py
 
 from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 import jwt
 from app.utils.supabase import supabase
 from app.utils.auth import (
@@ -8,6 +9,7 @@ from app.utils.auth import (
     ALGORITHM,
     create_access_token
 )
+from app.utils.cookie import set_access_cookie
 
 
 async def refresh_token_controller(refresh_token: str):
@@ -39,10 +41,14 @@ async def refresh_token_controller(refresh_token: str):
             "sub": user_id
         })
 
-        return {
-            "access_token": new_access_token,
-            "token_type": "bearer"
-        }
+        response = JSONResponse(content={
+            "message": "Access token refreshed",
+            "status": "success"
+        })
+
+        set_access_cookie(response, new_access_token)
+
+        return response
 
     except jwt.ExpiredSignatureError:
         raise HTTPException(401, "Refresh token expired")

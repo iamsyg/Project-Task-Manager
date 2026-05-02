@@ -5,29 +5,7 @@ from fastapi.responses import JSONResponse
 from app.utils.supabase import supabase
 from app.models.auth.sign_up_model import SignUpRequest
 from app.utils.auth import hash_password, create_access_token, create_refresh_token
-
-def set_cookie(response: Response, access_token: str, refresh_token: str):
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=60 * 60,
-        path="/",
-        domain=None,  
-    )
-
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=7 * 24 * 60 * 60,
-        path="/",
-        domain=None,  
-    )
+from app.utils.cookie import set_auth_cookies
 
 
 async def sign_up_controller(data: SignUpRequest):
@@ -81,7 +59,7 @@ async def sign_up_controller(data: SignUpRequest):
             "status": "success"
         })
 
-        set_cookie(response, access_token, refresh_token)
+        set_auth_cookies(response, access_token, refresh_token)
 
         return response
 

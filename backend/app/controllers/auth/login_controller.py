@@ -10,30 +10,7 @@ from app.utils.auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     REFRESH_TOKEN_EXPIRE_DAYS,
 )
-
-
-def set_cookie(response: Response, access_token: str, refresh_token: str):
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        path="/",
-        domain=None,  
-    )
-
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-        path="/",
-        domain=None,  
-    )
+from app.utils.cookie import set_auth_cookies
 
 
 async def login_controller(email: str, password: str):
@@ -78,7 +55,7 @@ async def login_controller(email: str, password: str):
             "status": "success",
         })
 
-        set_cookie(response, access_token, refresh_token)
+        set_auth_cookies(response, access_token, refresh_token)
 
         return response
 
