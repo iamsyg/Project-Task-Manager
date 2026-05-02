@@ -90,7 +90,7 @@ Database (PostgreSQL / Supabase)
 
 ### Deployment
 - Railway (Backend)
-- Vercel / Railway (Frontend)
+- Railway (Frontend)
 
 ---
 
