@@ -29,6 +29,12 @@ export const fetchWithAuth = async (url: string, options: any = {}) => {
       ...options,
       credentials: "include",
     });
+
+    if (response.status === 401) {
+      localStorage.removeItem("user");
+      window.location.href = "/";
+      throw new Error("Session invalid after refresh");
+    }
   }
 
   return response;

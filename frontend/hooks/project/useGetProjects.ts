@@ -6,6 +6,7 @@ import {
   setProjectLoading,
   setProjectError,
 } from "@/store/slices/project/projectListSlice";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export const useGetProjects = () => {
   const dispatch = useAppDispatch();
@@ -15,13 +16,11 @@ export const useGetProjects = () => {
     dispatch(setProjectError(null));
 
     try {
-      const token = localStorage.getItem("accessToken");
 
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/all`,
         {
           method: "GET",
-          credentials: "include",
         }
       );
 

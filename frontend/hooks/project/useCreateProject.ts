@@ -6,6 +6,7 @@ import {
   setProjectLoading,
   setProjectError,
 } from "@/store/slices/project/projectSlice";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export const useCreateProject = () => {
   const dispatch = useAppDispatch();
@@ -22,13 +23,12 @@ export const useCreateProject = () => {
     try {
       const token = localStorage.getItem("accessToken");
 
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/create`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             title,
