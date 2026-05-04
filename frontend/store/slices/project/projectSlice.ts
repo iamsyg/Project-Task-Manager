@@ -4,6 +4,30 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type ProjectStatus = "pending" | "in_progress" | "completed";
 
+export interface CreatedBy {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface Members {
+  id: string;
+  role: "admin" | "member";
+  joined_at: string;
+  user: CreatedBy | null;
+}
+
+export interface Tasks {
+  id: string;
+  title: string;
+  description: string | null;
+  status: "pending" | "in_progress" | "completed";
+  due_date: string | null;
+  created_at: string;
+  updated_at: string;
+  assigned_to: CreatedBy | null;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -11,10 +35,16 @@ export interface Project {
   due_date: string | null;
   status: ProjectStatus;
   project_code: string;
-  admin_id: string;
-  require_approval: boolean;
+  created_by: CreatedBy | null;
+  require_approval?: boolean;
   created_at: string;
   updated_at: string;
+  is_admin?: boolean; // This field is optional and will be set when fetching project details
+  members_count?: number; // Optional, set when fetching project details
+  tasks_count?: number; // Optional, set when fetching project details
+  current_user_role?: "admin" | "member"; // Optional, set when fetching project details
+  members?: Members[]; // Optional, set when fetching project details
+  tasks?: Tasks[];
 }
 
 interface ProjectState {
