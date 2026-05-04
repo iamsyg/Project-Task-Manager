@@ -1,10 +1,11 @@
 // frontend/components/dashboard/Dashboard.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { Header } from "@/components/dashboard/Header";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
-import { Plus, Search, LayoutGrid, List, FolderKanban, X } from "lucide-react";
+import { Plus, Search, LayoutGrid, List, FolderKanban, X, UserPlus } from "lucide-react";
 import { SignUpModal } from "@/components/auth/SignUpModal";
 import { LogInModal } from "@/components/auth/LogInModal";
 import { useAppSelector } from "@/store/hooks";
@@ -33,6 +34,7 @@ export function Dashboard() {
   >("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
@@ -50,6 +52,10 @@ export function Dashboard() {
 
   const handleCreateProjectClick = () => {
     setIsCreateModalOpen(true);
+  };
+
+  const handleJoinProjectClick = () => {
+    setIsJoinModalOpen(true);
   };
 
   const handleViewProject = (project: ProjectType) => {
@@ -105,15 +111,24 @@ export function Dashboard() {
               </p>
             </div>
 
-            {/* Only show Create Project button when authenticated */}
+            {/* Only show buttons when authenticated */}
             {isAuthenticated && (
-              <button
-                onClick={handleCreateProjectClick}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Create Project</span>
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleJoinProjectClick}
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-sm hover:shadow-md"
+                >
+                  <UserPlus className="w-5 h-5" />
+                  <span>Join Project</span>
+                </button>
+                <button
+                  onClick={handleCreateProjectClick}
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Create Project</span>
+                </button>
+              </div>
             )}
           </div>
 
@@ -212,15 +227,24 @@ export function Dashboard() {
                     No projects found
                   </h3>
                   <p className="text-gray-500">
-                    Get started by creating your first project
+                    Get started by creating or joining a project
                   </p>
-                  <button
-                    onClick={handleCreateProjectClick}
-                    className="mt-4 inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Create Project</span>
-                  </button>
+                  <div className="flex justify-center gap-3 mt-4">
+                    <button
+                      onClick={handleCreateProjectClick}
+                      className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Create Project</span>
+                    </button>
+                    <button
+                      onClick={handleJoinProjectClick}
+                      className="inline-flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>Join Project</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div
@@ -264,6 +288,10 @@ export function Dashboard() {
 
       {isCreateModalOpen && (
         <CreateProjectModal onClose={() => setIsCreateModalOpen(false)} />
+      )}
+
+      {isJoinModalOpen && (
+        <JoinProjectModal onClose={() => setIsJoinModalOpen(false)} />
       )}
 
       <SignUpModal
@@ -395,6 +423,102 @@ function CreateProjectModal({ onClose }: { onClose: () => void }) {
               className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all"
             >
               Create Project
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
+  );
+}
+
+
+
+
+
+// Static Join Project Modal Component
+function JoinProjectModal({ onClose }: { onClose: () => void }) {
+  const [projectCode, setProjectCode] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!projectCode.trim()) return;
+    
+    setIsJoining(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      console.log("Joining project with code:", projectCode);
+      alert(`Joining project with code: ${projectCode}`);
+      setIsJoining(false);
+      onClose();
+    }, 1000);
+  };
+
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
+      
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 p-6">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-green-100 rounded-xl">
+              <UserPlus className="w-5 h-5 text-green-600" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">Join Project</h2>
+          </div>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+        
+        <p className="text-sm text-gray-600 mb-6">
+          Enter the project code provided by the project administrator to join an existing project.
+        </p>
+        
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Project Code <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={projectCode}
+              onChange={(e) => setProjectCode(e.target.value.toUpperCase())}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all font-mono text-lg tracking-wider"
+              placeholder="Enter project code (e.g., PROJ-1234)"
+              required
+              autoFocus
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              The project code is typically found in the project details or shared by the project admin.
+            </p>
+          </div>
+          
+          <div className="flex space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+              disabled={isJoining}
+            >
+              Cancel
+            </button>
+            
+            <button
+              type="submit"
+              disabled={isJoining || !projectCode.trim()}
+              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              {isJoining ? (
+                <span className="flex items-center justify-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  <span>Joining...</span>
+                </span>
+              ) : (
+                "Join Project"
+              )}
             </button>
           </div>
         </form>
