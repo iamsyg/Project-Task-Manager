@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import { Project, Members, Tasks } from "@/store/slices/project/projectSlice";
+import { useCreateTask } from "@/hooks/project/task/useCreateTask";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -36,7 +37,6 @@ export function ProjectModal({
   isOpen, 
   onClose, 
   project, 
-  onTaskCreate, 
   onTaskUpdate, 
   onMemberAdd, 
   onStatusChange 
@@ -276,10 +276,10 @@ export function ProjectModal({
                               <div className="flex items-center gap-2 mb-2">
                                 <h3 className="font-semibold text-gray-900">{task.title}</h3>
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[task.status]}`}>
-                                  <span className="flex items-center gap-1">
+                                  {/* <span className="flex items-center gap-1">
                                     <TaskStatusIcon className="w-3 h-3" />
                                     {task.status.replace("_", " ")}
-                                  </span>
+                                  </span> */}
                                 </span>
                                 {isOverdue && (
                                   <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700">
@@ -415,10 +415,6 @@ export function ProjectModal({
           onClose={() => setIsCreateTaskOpen(false)}
           projectId={project.id}
           members={displayMembers}
-          onCreate={(taskData) => {
-            onTaskCreate?.(taskData);
-            setIsCreateTaskOpen(false);
-          }}
         />
       )}
     </>
@@ -430,7 +426,6 @@ function CreateTaskModal({
   onClose,
   projectId,
   members,
-  onCreate,
 }: {
   onClose: () => void;
   projectId: string;
@@ -441,24 +436,36 @@ function CreateTaskModal({
     role: string;
     joinedAt: string;
   }>;
-  onCreate: (data: any) => void;
+  
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [status, setStatus] = useState<"pending" | "progress" | "completed">("pending");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { createTask } = useCreateTask();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !assignedTo) return;
+
+    try {
+      const res = await createTask({
+        project_id: projectId,
+        title,
+        description,
+        assigned_to: assignedTo,
+        status,
+        due_date: dueDate ? `${dueDate}T23:59:00Z` : null,
+      })
+    }
+      catch (err) {
+        console.error("Failed to create task:", err);
+        alert("Failed to create task. Please try again.");
+      }
+
     
-    onCreate({
-      title,
-      description,
-      assignedTo,
-      dueDate: dueDate ? `${dueDate}T23:59:00Z` : undefined,
-      status: "pending",
-    });
   };
 
   return (
@@ -510,6 +517,19 @@ function CreateTaskModal({
                   {member.name} ({member.email})
                 </option>
               ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as "pending" | "progress" | "completed")}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="pending">Pending</option>
+              <option value="progress">In Progress</option>
+              <option value="completed">Completed</option>
             </select>
           </div>
 

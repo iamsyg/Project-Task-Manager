@@ -109,6 +109,47 @@ const projectSlice = createSlice({
       state.error = action.payload;
     },
 
+    addTaskToSelectedProject(state, action: PayloadAction<Tasks>) {
+      if (state.selectedProject) {
+        if (!state.selectedProject.tasks) {
+          state.selectedProject.tasks = [];
+        }
+
+        state.selectedProject.tasks.unshift(action.payload);
+
+        state.selectedProject.tasks_count =
+          (state.selectedProject.tasks_count || 0) + 1;
+      }
+    },
+
+    updateTaskInSelectedProject(state, action: PayloadAction<Tasks>) {
+      if (!state.selectedProject?.tasks) return;
+
+      const index = state.selectedProject.tasks.findIndex(
+        (task) => task.id === action.payload.id
+      );
+
+      if (index !== -1) {
+        state.selectedProject.tasks[index] = {
+          ...state.selectedProject.tasks[index],
+          ...action.payload,
+        };
+      }
+    },
+
+    removeTaskFromSelectedProject(state, action: PayloadAction<string>) {
+      if (!state.selectedProject?.tasks) return;
+
+      state.selectedProject.tasks = state.selectedProject.tasks.filter(
+        (task) => task.id !== action.payload
+      );
+
+      state.selectedProject.tasks_count = Math.max(
+        (state.selectedProject.tasks_count || 1) - 1,
+        0
+      );
+    },
+
     resetProjects(state) {
       state.projects = [];
       state.selectedProject = null;
@@ -126,6 +167,9 @@ export const {
   removeProject,
   setProjectLoading,
   setProjectError,
+  addTaskToSelectedProject,
+  updateTaskInSelectedProject,
+  removeTaskFromSelectedProject,
   resetProjects,
 } = projectSlice.actions;
 
