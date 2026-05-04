@@ -5,6 +5,8 @@ from app.controllers.project.create_project_controller import create_project_con
 from app.controllers.project.fetch_project_controller import fetch_all_project_controller
 from app.controllers.project.join_project_controller import join_project_controller
 from app.models.project.join_project_model import JoinProjectRequest
+from app.controllers.project.fetch_project_details_controller import fetch_project_details_controller
+from app.models.project.fetch_project_details_model import FetchProjectDetailsRequest
 
 router = APIRouter(prefix="/project")
 
@@ -28,3 +30,10 @@ async def join_project(
     user_id: str = Depends(verify_jwt_token)
 ):
     return await join_project_controller(data.project_code, user_id)
+
+@router.get("/fetch/{project_id}")
+async def fetch_project_details(
+    project_id: str,
+    user_id: str = Depends(verify_jwt_token)
+):
+    return await fetch_project_details_controller(project_id, user_id)
