@@ -47,9 +47,29 @@ async def create_project_controller(data: CreateProjectRequest, user_id: str):
             "role": "admin"
         }).execute()
 
+        # return {
+        #     "message": "Project created successfully",
+        #     "project": project
+        # }
+
         return {
             "message": "Project created successfully",
-            "project": project
+            "project": {
+                "id": project["id"],
+                "title": project["title"],
+                "description": project["description"],
+                "status": project["status"],
+                "due_date": project["due_date"],
+                "project_code": project["project_code"],
+
+                "members_count": 1,
+                "tasks_count": 0,
+
+                "role": "admin",
+                "is_admin": True,
+
+                "created_at": project["created_at"],
+            }
         }
 
     except HTTPException:

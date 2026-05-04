@@ -5,7 +5,7 @@ import {
   addProject,
   setProjectLoading,
   setProjectError,
-} from "@/store/slices/project/projectSlice";
+} from "@/store/slices/project/projectListSlice";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export const useCreateProject = () => {
@@ -21,8 +21,6 @@ export const useCreateProject = () => {
     dispatch(setProjectError(null));
 
     try {
-      const token = localStorage.getItem("accessToken");
-
       const response = await fetchWithAuth(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/create`,
         {
@@ -48,7 +46,6 @@ export const useCreateProject = () => {
       dispatch(addProject(data.project));
 
       return data.project;
-
     } catch (err: any) {
       dispatch(setProjectError(err.message || "Something went wrong"));
       throw err;

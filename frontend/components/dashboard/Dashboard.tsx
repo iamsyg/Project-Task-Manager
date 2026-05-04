@@ -353,7 +353,7 @@ function CreateProjectModal({ onClose }: { onClose: () => void }) {
         title,
         description || undefined,
         dueDate ? `${dueDate}T23:59:00Z` : undefined,
-        true
+        false
       );
 
       onClose();
