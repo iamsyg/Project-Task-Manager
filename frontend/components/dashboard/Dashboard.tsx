@@ -12,6 +12,7 @@ import { useAppSelector } from "@/store/hooks";
 import { useGetProjects } from "@/hooks/project/useGetProjects";
 import { useCreateProject } from "@/hooks/project/useCreateProject";
 import { ProjectModal } from "./ProjectModal";
+import { useJoinProject } from "@/hooks/project/useJoinProject";
 
 // Define the Project type matching your API response
 interface ProjectType {
@@ -440,20 +441,32 @@ function JoinProjectModal({ onClose }: { onClose: () => void }) {
   const [projectCode, setProjectCode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
 
+  const { joinProject } = useJoinProject();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!projectCode.trim()) return;
     
     setIsJoining(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Joining project with code:", projectCode);
-      alert(`Joining project with code: ${projectCode}`);
+
+    try {
+      const result = await joinProject(projectCode.trim());
+
+      if (result.status === "success") {
+        onClose();
+      } else {
+        alert(result.error || "Failed to join project");
+      }
+    }
+    catch (error) {
+      console.error("Error joining project:", error);
+      alert(error instanceof Error ? error.message : "Something went wrong");
+    }
+    finally {
       setIsJoining(false);
-      onClose();
-    }, 1000);
+    }
+      
   };
 
   return (

@@ -1,3 +1,4 @@
+# backend/app/controllers/project/join_project_controller.py
 
 from fastapi import HTTPException
 from app.utils.supabase import supabase
@@ -10,33 +11,30 @@ async def join_project_controller(project_code: str, user_id: str):
         if not project_code:
             raise HTTPException(400, "Project code is required")
 
-        # 1. Check valid user
         user_res = (
             supabase.table("users")
-            .select("id, name, email")
+            .select("id")
             .eq("id", user_id)
             .limit(1)
             .execute()
         )
 
-        if not user_res or not user_res.data:
+        if not user_res.data:
             raise HTTPException(404, "User account not found")
 
-        # 2. Find project by code
         project_res = (
             supabase.table("projects")
-            .select("id, title, project_code, admin_id")
+            .select("id, title, description, status, due_date, project_code, admin_id, created_at")
             .eq("project_code", project_code)
             .limit(1)
             .execute()
         )
 
-        if not project_res or not project_res.data:
+        if not project_res.data:
             raise HTTPException(404, "Invalid project code")
 
         project = project_res.data[0]
 
-        # 3. Check already member
         existing_member_res = (
             supabase.table("project_members")
             .select("id, role")
@@ -46,33 +44,63 @@ async def join_project_controller(project_code: str, user_id: str):
             .execute()
         )
 
-        if existing_member_res and existing_member_res.data:
-            return {
-                "message": "You are already a part of this project",
-                "project": project,
-                "role": existing_member_res.data[0]["role"],
-                "status": "already_joined"
-            }
+        if existing_member_res.data:
+            role = existing_member_res.data[0]["role"]
+            status = "already_joined"
+            message = "You are already a part of this project"
+        else:
+            member_res = (
+                supabase.table("project_members")
+                .insert({
+                    "project_id": project["id"],
+                    "user_id": user_id,
+                    "role": "member"
+                })
+                .execute()
+            )
 
-        # 4. Insert member
-        member_res = (
+            if not member_res.data:
+                raise HTTPException(500, "Failed to join project")
+
+            role = "member"
+            status = "success"
+            message = "Project joined successfully"
+
+        members_count_res = (
             supabase.table("project_members")
-            .insert({
-                "project_id": project["id"],
-                "user_id": user_id,
-                "role": "member"
-            })
+            .select("id", count="exact")
+            .eq("project_id", project["id"])
             .execute()
         )
 
-        if not member_res or not member_res.data:
-            raise HTTPException(500, "Failed to join project")
+        tasks_count_res = (
+            supabase.table("tasks")
+            .select("id", count="exact")
+            .eq("project_id", project["id"])
+            .execute()
+        )
+
+        project_list_item = {
+            "id": project["id"],
+            "title": project["title"],
+            "description": project["description"],
+            "status": project["status"],
+            "due_date": project["due_date"],
+            "project_code": project["project_code"],
+
+            "members_count": members_count_res.count or 0,
+            "tasks_count": tasks_count_res.count or 0,
+
+            "role": role,
+            "is_admin": role == "admin",
+
+            "created_at": project["created_at"],
+        }
 
         return {
-            "message": "Project joined successfully",
-            "project": project,
-            "member": member_res.data[0],
-            "status": "success"
+            "message": message,
+            "project": project_list_item,
+            "status": status
         }
 
     except HTTPException:
