@@ -8,6 +8,8 @@ from app.models.project.join_project_model import JoinProjectRequest
 from app.controllers.project.fetch_project_details_controller import fetch_project_details_controller
 from app.models.project.fetch_project_details_model import FetchProjectDetailsRequest
 
+from app.routes.project.task.task_route import router as task_router
+
 router = APIRouter(prefix="/project")
 
 @router.post("/create")
@@ -37,3 +39,7 @@ async def fetch_project_details(
     user_id: str = Depends(verify_jwt_token)
 ):
     return await fetch_project_details_controller(project_id, user_id)
+
+
+
+router.include_router(task_router)
