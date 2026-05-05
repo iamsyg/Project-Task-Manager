@@ -42,9 +42,6 @@ async def logout(request: Request):
 
     print("Logout requested. Refresh token:", refresh_token)  # Debugging line
 
-    if not refresh_token:
-        raise HTTPException(401, "Not logged in")
-
     return await logout_controller(refresh_token)
 
 @router.get("/me")
